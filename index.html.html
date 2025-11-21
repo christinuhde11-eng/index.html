@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KISSKI Medical AI Platform - Final Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Design System - Colors (Medical Blue + Clinical Green) */
+        :root {
+            /* Primary Colors - Medical Blue */
+            --color-primary: #0369A1;
+            --color-primary-hover: #0284C7;
+            --color-primary-active: #0369A1;
+            --color-primary-light: rgba(3, 105, 161, 0.1);
+            
+            /* Secondary Colors - Clinical Green */
+            --color-secondary: #047857;
+            --color-secondary-hover: #059669;
+            --color-secondary-light: rgba(4, 120, 87, 0.1);
+            
+            /* Backgrounds */
+            --color-background: #F8FAFC;
+            --color-surface: #FFFFFF;
+            --color-surface-glass: rgba(255, 255, 255, 0.95);
+            
+            /* Text */
+            --color-text-primary: #0F172A;
+            --color-text-secondary: #64748B;
+            --color-text-muted: #94A3B8;
+            
+            /* Status Colors */
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #3B82F6;
+            
+            /* Borders */
+            --color-border: #E2E8F0;
+            --color-border-focus: var(--color-primary);
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            
+            /* Focus Ring */
+            --focus-ring: 0 0 0 3px rgba(3, 105, 161, 0.2);
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-base: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* Transitions */
+            --transition-fast: 150ms ease-in-out;
+            --transition-normal: 250ms ease-in-out;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Glassmorphism Card Base */
+        .glass-card {
+            background: var(--color-surface-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: var(--space-6);
+        }
+
+        /* Layout Grid */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 70px 1fr;
+            grid-template-areas:
+                "header header header"
+                "sidebar main status";
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            grid-area: header;
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-6);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-weight: 700;
+            font-size: var(--font-size-xl);
+            color: var(--color-primary);
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--color-primary);
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--font-size-lg);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+        }
+
+        .btn {
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-background);
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            grid-area: sidebar;
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: var(--space-6);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .sidebar-title {
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-3);
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-base);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .sidebar-nav-item:hover {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        .sidebar-nav-item.active {
+            background: var(--color-primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        .sidebar-nav-icon {
+            font-size: var(--font-size-lg);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            grid-area: main;
+            padding: var(--space-6);
+            overflow-y: auto;
+            background: var(--color-background);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-6);
+        }
+
+        .page-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+        }
+
+        /* Vital Cards Grid */
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .vital-card {
+            background: var(--color-surface-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            transition: all var(--transition-normal);
+        }
+
+        .vital-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .vital-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-3);
+        }
+
+        .vital-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .vital-icon {
+            font-size: var(--font-size-xl);
+        }
+
+        .vital-value {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .vital-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+        }
+
+        .vital-trend {
+            font-weight: 600;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+        }
+
+        .trend-up {
+            color: var(--color-error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .trend-down {
+            color: var(--color-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .trend-stable {
+            color: var(--color-text-secondary);
+            background: rgba(100, 116, 139, 0.1);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .status-normal {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+        }
+
+        /* AI Recommendation Card */
+        .ai-card {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .ai-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .ai-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+        }
+
+        .ai-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+        }
+
+        .ai-subtitle {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            opacity: 0.95;
+        }
+
+        .ai-message {
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .ai-action {
+            margin-top: var(--space-4);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .ai-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Status Sidebar */
+        .status-panel {
+            grid-area: status;
+            background: var(--color-surface);
+            border-left: 1px solid var(--color-border);
+            padding: var(--space-6);
+            overflow-y: auto;
+        }
+
+        .status-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .status-section-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .alert-item {
+            padding: var(--space-3);
+            background: var(--color-background);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-2);
+            border-left: 3px solid var(--color-warning);
+        }
+
+        .alert-item.critical {
+            border-left-color: var(--color-error);
+        }
+
+        .alert-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin-bottom: var(--space-1);
+        }
+
+        .alert-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: var(--font-size-2xl);
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-base);
+        }
+
+        .modal-close:hover {
+            background: var(--color-background);
+        }
+
+        .modal-body {
+            padding: var(--space-6);
+        }
+
+        /* Chat Interface */
+        .chat-window {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .chat-message {
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-base);
+            max-width: 80%;
+        }
+
+        .chat-message.user {
+            background: var(--color-primary);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .chat-message.ai {
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            align-self: flex-start;
+        }
+
+        .chat-input-area {
+            padding: var(--space-4);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: var(--space-3);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-sm);
+            font-family: var(--font-family);
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "main";
+            }
+            
+            .sidebar,
+            .status-panel {
+                display: none;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-brand">
+                <div class="nav-brand-icon">🩺</div>
+                <span>KISSKI Medical AI</span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-secondary">⚙️ Einstellungen</button>
+                <button class="btn btn-primary" onclick="openAIChat()">💬 KI-Assistent</button>
+            </div>
+        </nav>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Übersicht</div>
+                <nav class="sidebar-nav">
+                    <a href="#dashboard" class="sidebar-nav-item active">
+                        <span class="sidebar-nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#monitoring" class="sidebar-nav-item">
+                        <span class="sidebar-nav-icon">💓</span>
+                        <span>Live-Monitoring</span>
+                    </a>
+                    <a href="#analysis" class="sidebar-nav-item">
+                        <span class="sidebar-nav-icon">📊</span>
+                        <span>KI-Analysen</span>
+                    </a>
+                    <a href="#explainability" class="sidebar-nav-item">
+                        <span class="sidebar-nav-icon">❓</span>
+                        <span>KI-Erklärungen</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Daten</div>
+                <nav class="sidebar-nav">
+                    <a href="#history" class="sidebar-nav-item">
+                        <span class="sidebar-nav-icon">📈</span>
+                        <span>Verlaufsdaten</span>
+                    </a>
+                    <a href="#reports" class="sidebar-nav-item">
+                        <span class="sidebar-nav-icon">📤</span>
+                        <span>Berichte</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Übersicht über Vitalparameter und KI-Empfehlungen</p>
+            </div>
+
+            <!-- Vitals Grid -->
+            <div class="vitals-grid">
+                <div class="vital-card">
+                    <div class="vital-header">
+                        <div class="vital-label">Herzfrequenz</div>
+                        <div class="vital-icon">💓</div>
+                    </div>
+                    <div id="heartRate" class="vital-value">74 <span style="font-size: var(--font-size-base); color: var(--color-text-secondary);">bpm</span></div>
+                    <div class="vital-meta">
+                        <span>Baseline: 74 bpm</span>
+                        <span>Letzter Check: 14:23</span>
+                    </div>
+                </div>
+
+                <div class="vital-card">
+                    <div class="vital-header">
+                        <div class="vital-label">Blutdruck</div>
+                        <div class="vital-icon">🩸</div>
+                    </div>
+                    <div class="vital-value">128<span style="font-size: var(--font-size-lg); font-weight: 400;">/</span>82 <span style="font-size: var(--font-size-base); color: var(--color-text-secondary);">mmHg</span></div>
+                    <div class="vital-meta">
+                        <span class="status-badge status-normal">✓ Normbereich</span>
+                        <span>Letzter Check: 14:20</span>
+                    </div>
+                </div>
+
+                <div class="vital-card">
+                    <div class="vital-header">
+                        <div class="vital-label">Temperatur</div>
+                        <div class="vital-icon">🌡️</div>
+                    </div>
+                    <div class="vital-value">36.6 <span style="font-size: var(--font-size-base); color: var(--color-text-secondary);">°C</span></div>
+                    <div class="vital-meta">
+                        <span class="status-badge status-normal">✓ Normal</span>
+                        <span>Letzter Check: 14:18</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recommendation -->
+            <div class="ai-card">
+                <div class="ai-card-header">
+                    <div class="ai-icon">🤖</div>
+                    <div class="ai-title">KI-Empfehlung</div>
+                </div>
+                <div class="ai-subtitle">Routine-Check empfohlen</div>
+                <div class="ai-message">
+                    Erhöhte Herzfrequenz seit 48h. Überwachung der Vitalparameter angeraten.
+                </div>
+                <button class="ai-action" onclick="openAIChat()">Details anzeigen →</button>
+            </div>
+        </main>
+
+        <!-- Status Panel -->
+        <aside class="status-panel">
+            <div class="status-section">
+                <div class="status-section-title">System Status</div>
+                <div class="status-badge status-normal" style="width: 100%; justify-content: center;">
+                    ✓ Alle Systeme betriebsbereit
+                </div>
+            </div>
+
+            <div class="status-section">
+                <div class="status-section-title">Aktuelle Alerts</div>
+                <div class="alert-item">
+                    <div class="alert-title">⚠️ Erhöhte Herzfrequenz</div>
+                    <div class="alert-time">vor 2 Stunden</div>
+                </div>
+                <div class="alert-item critical">
+                    <div class="alert-title">🔴 Batterie niedrig</div>
+                    <div class="alert-time">vor 5 Minuten</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🤖 KI-Assistent</h2>
+                <button class="modal-close" onclick="closeAIChat()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="chat-window" id="chatWindow">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message ai">
+                            Hallo! Ich bin Ihr KI-Assistent. Wie kann ich Ihnen helfen?
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Nachricht eingeben..." onkeypress="handleChatKeyPress(event)">
+                        <button class="btn btn-primary" onclick="sendMessage()">Senden</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('KISSKI Dashboard loaded successfully');
+            
+            // Initialize any dynamic features
+            updateVitals();
+        });
+
+        // AI Chat Modal Functions
+        function openAIChat() {
+            const modal = document.getElementById('aiModal');
+            if (modal) {
+                modal.classList.add('active');
+                const input = document.getElementById('chatInput');
+                if (input) {
+                    input.focus();
+                }
+            }
+        }
+
+        function closeAIChat() {
+            const modal = document.getElementById('aiModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Close modal on background click
+        document.getElementById('aiModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAIChat();
+            }
+        });
+
+        // Chat Functions
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            if (!input || !messagesContainer) return;
+            
+            const message = input.value.trim();
+            if (message === '') return;
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message user';
+            userMsg.textContent = message;
+            messagesContainer.appendChild(userMsg);
+            
+            // Clear input
+            input.value = '';
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'chat-message ai';
+                aiMsg.textContent = 'Vielen Dank für Ihre Nachricht. Ein medizinisches Fachpersonal wird sich in Kürze bei Ihnen melden.';
+                messagesContainer.appendChild(aiMsg);
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Simulate live vital updates
+        function updateVitals() {
+            setInterval(() => {
+                const heartRate = document.getElementById('heartRate');
+                if (heartRate) {
+                    const currentValue = 74;
+                    const variation = Math.floor(Math.random() * 10) - 5;
+                    const newValue = currentValue + variation;
+                    
+                    heartRate.innerHTML = `${newValue} <span style="font-size: var(--font-size-base); color: var(--color-text-secondary);">bpm</span>
+                    <span class="vital-trend ${newValue > 80 ? 'trend-up' : newValue < 75 ? 'trend-down' : 'trend-stable'}" role="status">
+                        ${newValue > 80 ? '+' : ''}${Math.round(((newValue - 74) / 74) * 100)}%
+                    </span>`;
+                }
+            }, 10000); // Update every 10 seconds
+        }
+    </script>
+</body>
+</html>
